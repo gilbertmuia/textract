@@ -1,0 +1,53 @@
+{
+  "Comment": "File-ingest pipeline",
+  "StartAt": "ConvertToImage",
+  "States": {
+    "ConvertToImage": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:105714714499:function:convert_to_image",
+      "Next": "ProcessPages"
+    },
+    "ProcessPages": {
+      "Type": "Map",
+      "ItemsPath": "$.images",
+      "Iterator": {
+        "StartAt": "ParallelWork",
+        "States": {
+          "ParallelWork": {
+            "Type": "Parallel",
+            "Branches": [
+              {
+                "StartAt": "QrScanner",
+                "States": {
+                  "QrScanner": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:lambda:us-east-1:105714714499:function:qr_scanner",
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "OcrText",
+                "States": {
+                  "OcrText": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:lambda:us-east-1:105714714499:function:ocr_text",
+                    "End": true
+                  }
+                }
+              }
+            ],
+            "Next": "PageJoin"
+          },
+          "PageJoin": { "Type": "Pass", "End": true }
+        }
+      },
+      "Next": "ValidateAndWrite"
+    },
+    "ValidateAndWrite": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:105714714499:function:validate_write",
+      "End": true
+    }
+  }
+}

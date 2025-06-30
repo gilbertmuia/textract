@@ -1,0 +1,13 @@
+layers*
+.terraform*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+*.tfplan.json
+.terraform.lock.hcl
+.zip
+
+
+# aws stepfunctions start-execution   --region us-east-1  --state-machine-arn arn:aws:states:us-east-1:105714714499:stateMachine:FileProcessingPipeline-8e5b04cd --input '{"bucket":"file-processing-bucket-8e5b04cd", "s3Key":"uploads/invoice.pdf"}'
